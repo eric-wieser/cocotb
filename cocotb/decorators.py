@@ -32,6 +32,7 @@ import traceback
 import pdb
 import functools
 import threading
+import concurrent.futures
 
 from io import StringIO, BytesIO
 
@@ -286,19 +287,29 @@ class function(object):
         self.log = SimLog("cocotb.function.%s" % self._func.__name__, id(self))
 
     def __call__(self, *args, **kwargs):
+        f = concurrent.futures.Future()
 
-        @coroutine
-        def execute_function(self, event):
-            event.result = yield cocotb.coroutine(self._func)(*args, **kwargs)
-            event.set()
+        @cocotb.coroutine
+        def execute_function():
+            # notify that we're starting the work, and skip if it was cancelled
+            if not f.set_running_or_notify_cancel():
+                return
 
-        self._event = threading.Event()
-        self._event.result = None
-        waiter = cocotb.scheduler.queue_function(execute_function(self, self._event))
+            # call the wrapped coroutine, saving its results
+            try:
+                ret = yield self._func(*args, **kwargs)
+            except Exception as e:
+                f.set_exception(e)
+            else:
+                f.set_result(ret)
+
+        waiter = cocotb.scheduler.queue_function(execute_function())
+      
         # This blocks the calling external thread until the coroutine finishes
-        self._event.wait()
-        waiter.thread_resume()
-        return self._event.result
+        try:
+            return f.result()
+        finally:
+            waiter.thread_resume()
 
     def __get__(self, obj, type=None):
         """Permit the decorator to be used on class methods
