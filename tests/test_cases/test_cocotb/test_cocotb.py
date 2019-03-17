@@ -932,5 +932,21 @@ def test_immediate_coro(dut):
     else:
         raise TestFailure("Exception was not raised")
 
+
+@cocotb.test()
+def test_premature_exit(dut):
+    @cocotb.coroutine
+    def set_valid(signal, wait=False):
+        if wait:
+            yield Timer(10, "ns")
+        signal <= 1
+    @cocotb.coroutine
+    def enable_tb(dut):
+        yield set_valid(dut.stream_in_valid)
+        yield Timer(10, "ns")
+
+    yield enable_tb(dut)
+
+
 if sys.version_info[:2] >= (3, 5):
     from test_cocotb_35 import *
