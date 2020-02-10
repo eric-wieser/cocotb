@@ -69,7 +69,6 @@ jobs:
     #     - echo 'travis_fold:end:cocotb_py36'
 
     - stage: SimTests
-      python: 3.7
       os: windows
       language: shell
       before_install:
