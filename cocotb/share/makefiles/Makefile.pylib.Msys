@@ -31,7 +31,20 @@
 
 # if not explicitly set, auto-detect python dir from system path
 ifeq ($(PYTHON_DIR),)
-    PYTHON_DIR ?= $(shell dirname $(shell :; command -v python))
+    PYTHON_ATTEMPT := $(shell :; command -v python)
+    $(info "w [$(shell which python)]")
+    $(info ":w [$(shell :; which python)]")
+    $(info "c [$(shell command -v python)]")
+    $(info ":c [$(shell :; command -v python)]")
+    $(info "Path is $(PATH)")
+    ifeq ($(PYTHON_ATTEMPT),)
+        $(info "Unable to find python, tried also")
+        $(error "Failed")
+    endif
+    $(info "running [echo test] = [$(shell echo test)]")
+    $(info "running [echo t$(PYTHON_ATTEMPT)t] = [$(shell echo t$(PYTHON_ATTEMPT)t)]")
+    $(info "running [dirname $(PYTHON_ATTEMPT)] = [$(shell dirname $(PYTHON_ATTEMPT))]")
+    PYTHON_DIR := $(dir $(PYTHON_ATTEMPT))
 endif
 
 # make sure python dir was set properly
