@@ -84,7 +84,8 @@ jobs:
         # - conda install --yes -c msys2 m2-base m2-make m2w64-toolchain libpython
         - pip install tox
         # no one will notice ;)
-        - cp /c/ProgramData/chocolatey/bin/mingw32-make /c/ProgramData/chocolatey/bin/make
+        # - cp /c/ProgramData/chocolatey/bin/mingw32-make /c/ProgramData/chocolatey/bin/make
+        - choco install make --version=3.81.4
         - which python
         - which pip
         - which make
