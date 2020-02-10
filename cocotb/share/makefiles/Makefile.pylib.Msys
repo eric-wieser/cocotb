@@ -30,6 +30,7 @@
 # All common python related rules
 
 $(info "Shell was $(SHELL), version is $(MAKE_VERSION), make is $(MAKE)")
+SHELL := /usr/bin/sh
 
 # if not explicitly set, auto-detect python dir from system path
 ifeq ($(PYTHON_DIR),)
