@@ -84,6 +84,8 @@ jobs:
         - pip install tox
         - which python
         - which pip
+        - which make
+        - make --version
         - python -V || echo "no python found"
         - python3 -V || echo "no python3 found"
         - py -0 || echo "no python launcher found"
