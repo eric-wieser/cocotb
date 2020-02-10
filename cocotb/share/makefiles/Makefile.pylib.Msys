@@ -46,7 +46,7 @@ ifeq ($(PYTHON_DIR),)
     $(info "running [echo test] = [$(shell echo test)]")
     $(info "running [echo t$(PYTHON_ATTEMPT)t] = [$(shell echo t$(PYTHON_ATTEMPT)t)]")
     $(info "running [dirname $(PYTHON_ATTEMPT)] = [$(shell dirname $(PYTHON_ATTEMPT))]")
-    PYTHON_DIR := $(dir $(PYTHON_ATTEMPT))
+    PYTHON_DIR := $(shell dirname $(PYTHON_ATTEMPT))
 endif
 
 # make sure python dir was set properly
