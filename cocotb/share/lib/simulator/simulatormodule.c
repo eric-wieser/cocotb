@@ -46,6 +46,161 @@ struct module_state {
     PyObject *error;
 };
 
+
+/* define the extension types */
+
+/* for gpi_sim_hdl */
+static PyTypeObject gpi_sim_hdl_Type;
+
+typedef struct {
+    PyObject_HEAD
+    gpi_sim_hdl hdl;
+} gpi_sim_hdl_Object;
+
+static PyObject *gpi_sim_hdl_repr(gpi_sim_hdl_Object *self) {
+    PyTypeObject *type = Py_TYPE(self);
+    return PyUnicode_FromFormat("<%s at %p>",
+                                  type->tp_name, self->hdl);
+}
+static Py_hash_t gpi_sim_hdl_hash(gpi_sim_hdl_Object *self) {
+    Py_hash_t ret = (Py_hash_t)self->hdl;
+    if (ret == (Py_hash_t)-1) {
+        ret = (Py_hash_t)-2;
+    }
+    return ret;
+}
+
+static PyObject *gpi_sim_hdl_richcompare(PyObject *self, PyObject *other, int op) {
+    gpi_sim_hdl_Object *self_hdl_obj;
+    gpi_sim_hdl_Object *other_hdl_obj;
+
+    if (
+            Py_TYPE(self) != &gpi_sim_hdl_Type ||
+            Py_TYPE(other) != &gpi_sim_hdl_Type) {
+        Py_RETURN_NOTIMPLEMENTED;
+    }
+
+    self_hdl_obj = (gpi_sim_hdl_Object *)self;
+    other_hdl_obj = (gpi_sim_hdl_Object *)other;
+
+    switch (op) {
+        case Py_EQ: return PyBool_FromLong(self_hdl_obj->hdl == other_hdl_obj->hdl);
+        case Py_NE: return PyBool_FromLong(self_hdl_obj->hdl != other_hdl_obj->hdl);
+        default: Py_RETURN_NOTIMPLEMENTED;
+    }
+}
+
+static PyTypeObject gpi_sim_hdl_Type = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "simulator.gpi_sim_hdl",
+    .tp_basicsize = sizeof(gpi_sim_hdl_Object),
+    .tp_flags = Py_TPFLAGS_DEFAULT,
+    .tp_repr = (reprfunc)gpi_sim_hdl_repr,
+    .tp_hash = (hashfunc)gpi_sim_hdl_hash,
+    .tp_richcompare = gpi_sim_hdl_richcompare,
+};
+
+static PyObject *gpi_sim_hdl_New(gpi_sim_hdl hdl) {
+    gpi_sim_hdl_Object *obj;
+    if (hdl == NULL) {
+        Py_RETURN_NONE;
+    }
+    obj = PyObject_New(gpi_sim_hdl_Object, &gpi_sim_hdl_Type);
+    if (obj == NULL) {
+        return NULL;
+    }
+    obj->hdl = hdl;
+    return (PyObject *)obj;
+}
+
+/* for gpi_cb_hdl */
+static PyTypeObject gpi_cb_hdl_Type;
+
+typedef struct {
+    PyObject_HEAD
+    gpi_cb_hdl hdl;
+} gpi_cb_hdl_Object;
+
+static PyObject *gpi_cb_hdl_repr(gpi_cb_hdl_Object *self) {
+    PyTypeObject *type = Py_TYPE(self);
+    return PyUnicode_FromFormat("<%s at %p>",
+                                  type->tp_name, self->hdl);
+}
+
+static Py_hash_t gpi_cb_hdl_hash(gpi_cb_hdl_Object *self) {
+    Py_hash_t ret = (Py_hash_t)self->hdl;
+    if (ret == (Py_hash_t)-1) {
+        ret = (Py_hash_t)-2;
+    }
+    return ret;
+}
+
+static PyTypeObject gpi_cb_hdl_Type = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "simulator.gpi_cb_hdl",
+    .tp_basicsize = sizeof(gpi_cb_hdl_Object),
+    .tp_flags = Py_TPFLAGS_DEFAULT,
+    .tp_repr = (reprfunc)gpi_cb_hdl_repr,
+    .tp_hash = (hashfunc)gpi_cb_hdl_hash,
+};
+
+static PyObject *gpi_cb_hdl_New(gpi_cb_hdl hdl) {
+    gpi_cb_hdl_Object *obj;
+    if (hdl == NULL) {
+        Py_RETURN_NONE;
+    }
+    obj = PyObject_New(gpi_cb_hdl_Object, &gpi_cb_hdl_Type);
+    if (obj == NULL) {
+        return NULL;
+    }
+    obj->hdl = hdl;
+    return (PyObject *)obj;
+}
+
+/* for gpi_iterator_hdl */
+static PyTypeObject gpi_iterator_hdl_Type;
+
+typedef struct {
+    PyObject_HEAD
+    gpi_iterator_hdl hdl;
+} gpi_iterator_hdl_Object;
+
+static PyObject *gpi_iterator_hdl_repr(gpi_iterator_hdl_Object *self) {
+    PyTypeObject *type = Py_TYPE(self);
+    return PyUnicode_FromFormat("<%s at %p>",
+                                  type->tp_name, self->hdl);
+}
+
+static Py_hash_t gpi_iterator_hdl_hash(gpi_iterator_hdl_Object *self) {
+    Py_hash_t ret = (Py_hash_t)self->hdl;
+    if (ret == (Py_hash_t)-1) {
+        ret = (Py_hash_t)-2;
+    }
+    return ret;
+}
+
+static PyTypeObject gpi_iterator_hdl_Type = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "simulator.gpi_iterator_hdl",
+    .tp_basicsize = sizeof(gpi_iterator_hdl_Object),
+    .tp_flags = Py_TPFLAGS_DEFAULT,
+    .tp_repr = (reprfunc)gpi_iterator_hdl_repr,
+    .tp_hash = (hashfunc)gpi_iterator_hdl_hash,
+};
+
+static PyObject *gpi_iterator_hdl_New(gpi_iterator_hdl hdl) {
+    gpi_iterator_hdl_Object *obj;
+    if (hdl == NULL) {
+        Py_RETURN_NONE;
+    }
+    obj = PyObject_New(gpi_iterator_hdl_Object, &gpi_iterator_hdl_Type);
+    if (obj == NULL) {
+        return NULL;
+    }
+    obj->hdl = hdl;
+    return (PyObject *)obj;
+}
+
 #define GETSTATE(m) ((struct module_state*)PyModule_GetState(m))
 
 typedef int (*gpi_function_t)(const void *);
@@ -69,53 +224,6 @@ struct sim_time {
 };
 
 static struct sim_time cache_time;
-
-// Converter function for turning a Python long into a sim handle, such that it
-// can be used by PyArg_ParseTuple format O&.
-static int gpi_sim_hdl_converter(PyObject *o, gpi_sim_hdl *data)
-{
-    void *p = PyLong_AsVoidPtr(o);
-    if ((p == NULL) && PyErr_Occurred()) {
-        return 0;
-    }
-    if (p == NULL) {
-        PyErr_SetString(PyExc_ValueError, "handle cannot be 0");
-        return 0;
-    }
-    *data = (gpi_sim_hdl)p;
-    return 1;
-}
-
-// Same as above, for a callback handle.
-static int gpi_cb_hdl_converter(PyObject *o, gpi_cb_hdl *data)
-{
-    void *p = PyLong_AsVoidPtr(o);
-    if ((p == NULL) && PyErr_Occurred()) {
-        return 0;
-    }
-    if (p == NULL) {
-        PyErr_SetString(PyExc_ValueError, "handle cannot be 0");
-        return 0;
-    }
-    *data = (gpi_cb_hdl)p;
-    return 1;
-}
-
-
-// Same as above, for an iterator handle.
-static int gpi_iterator_hdl_converter(PyObject *o, gpi_iterator_hdl *data)
-{
-    void *p = PyLong_AsVoidPtr(o);
-    if ((p == NULL) && PyErr_Occurred()) {
-        return 0;
-    }
-    if (p == NULL) {
-        PyErr_SetString(PyExc_ValueError, "handle cannot be 0");
-        return 0;
-    }
-    *data = (gpi_iterator_hdl)p;
-    return 1;
-}
 
 /**
  * @name    Callback Handling
@@ -285,7 +393,7 @@ static PyObject *register_readonly_callback(PyObject *self, PyObject *args)
 
     hdl = gpi_register_readonly_callback((gpi_function_t)handle_gpi_callback, callback_data_p);
 
-    PyObject *rv = PyLong_FromVoidPtr(hdl);
+    PyObject *rv = gpi_cb_hdl_New(hdl);
     FEXIT
 
     return rv;
@@ -338,7 +446,7 @@ static PyObject *register_rwsynch_callback(PyObject *self, PyObject *args)
 
     hdl = gpi_register_readwrite_callback((gpi_function_t)handle_gpi_callback, callback_data_p);
 
-    PyObject *rv = PyLong_FromVoidPtr(hdl);
+    PyObject *rv = gpi_cb_hdl_New(hdl);
     FEXIT
 
     return rv;
@@ -391,7 +499,7 @@ static PyObject *register_nextstep_callback(PyObject *self, PyObject *args)
 
     hdl = gpi_register_nexttime_callback((gpi_function_t)handle_gpi_callback, callback_data_p);
 
-    PyObject *rv = PyLong_FromVoidPtr(hdl);
+    PyObject *rv = gpi_cb_hdl_New(hdl);
     FEXIT
 
     return rv;
@@ -463,7 +571,7 @@ static PyObject *register_timed_callback(PyObject *self, PyObject *args)
     hdl = gpi_register_timed_callback((gpi_function_t)handle_gpi_callback, callback_data_p, time_ps);
 
     // Check success
-    PyObject *rv = PyLong_FromVoidPtr(hdl);
+    PyObject *rv = gpi_cb_hdl_New(hdl);
     FEXIT
 
     return rv;
@@ -495,9 +603,11 @@ static PyObject *register_value_change_callback(PyObject *self, PyObject *args) 
     }
 
     PyObject *pSihHdl = PyTuple_GetItem(args, 0);
-    if (!gpi_sim_hdl_converter(pSihHdl, &sig_hdl)) {
+    if (Py_TYPE(pSihHdl) != &gpi_sim_hdl_Type) {
+        PyErr_SetString(PyExc_TypeError, "First argument must be a gpi_sim_hdl");
         return NULL;
     }
+    sig_hdl = ((gpi_sim_hdl_Object *)pSihHdl)->hdl;
 
     // Extract the callback function
     function = PyTuple_GetItem(args, 1);
@@ -536,7 +646,7 @@ static PyObject *register_value_change_callback(PyObject *self, PyObject *args) 
                                              edge);
 
     // Check success
-    PyObject *rv = PyLong_FromVoidPtr(hdl);
+    PyObject *rv = gpi_cb_hdl_New(hdl);
     FEXIT
 
     return rv;
@@ -546,18 +656,18 @@ static PyObject *register_value_change_callback(PyObject *self, PyObject *args) 
 static PyObject *iterate(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
-    gpi_sim_hdl hdl;
+    gpi_sim_hdl_Object *hdl_obj;
     int type;
     gpi_iterator_hdl result;
     PyObject *res;
 
-    if (!PyArg_ParseTuple(args, "O&i", gpi_sim_hdl_converter, &hdl, &type)) {
+    if (!PyArg_ParseTuple(args, "O!i", &gpi_sim_hdl_Type, &hdl_obj, &type)) {
         return NULL;
     }
 
-    result = gpi_iterate(hdl, (gpi_iterator_sel_t)type);
+    result = gpi_iterate(hdl_obj->hdl, (gpi_iterator_sel_t)type);
 
-    res = PyLong_FromVoidPtr(result);
+    res = gpi_iterator_hdl_New(result);
 
     return res;
 }
@@ -566,22 +676,22 @@ static PyObject *iterate(PyObject *self, PyObject *args)
 static PyObject *next(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
-    gpi_iterator_hdl hdl;
+    gpi_iterator_hdl_Object* hdl_obj;
     gpi_sim_hdl result;
     PyObject *res;
 
-    if (!PyArg_ParseTuple(args, "O&", gpi_iterator_hdl_converter, &hdl)) {
+    if (!PyArg_ParseTuple(args, "O!", &gpi_iterator_hdl_Type, &hdl_obj)) {
         return NULL;
     }
 
-    // It's valid for iterate to return a NULL handle, to make the Python
+    // TODO:eric-wieser: It's valid for iterate to return a NULL handle, to make the Python
     // intuitive we simply raise StopIteration on the first iteration
-    if (!hdl) {
-        PyErr_SetNone(PyExc_StopIteration);
-        return NULL;
-    }
+    // if (!hdl) {
+    //     PyErr_SetNone(PyExc_StopIteration);
+    //     return NULL;
+    // }
 
-    result = gpi_next(hdl);
+    result = gpi_next(hdl_obj->hdl);
 
     // Raise StopIteration when we're done
     if (!result) {
@@ -589,7 +699,7 @@ static PyObject *next(PyObject *self, PyObject *args)
         return NULL;
     }
 
-    res = PyLong_FromVoidPtr(result);
+    res = gpi_sim_hdl_New(result);
 
     return res;
 }
@@ -598,15 +708,15 @@ static PyObject *next(PyObject *self, PyObject *args)
 static PyObject *get_signal_val_binstr(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
-    gpi_sim_hdl hdl;
+    gpi_sim_hdl_Object *hdl_obj;
     const char *result;
     PyObject *retstr;
 
-    if (!PyArg_ParseTuple(args, "O&", gpi_sim_hdl_converter, &hdl)) {
+    if (!PyArg_ParseTuple(args, "O!", &gpi_sim_hdl_Type, &hdl_obj)) {
         return NULL;
     }
 
-    result = gpi_get_signal_value_binstr(hdl);
+    result = gpi_get_signal_value_binstr(hdl_obj->hdl);
     retstr = Py_BuildValue("s", result);
 
     return retstr;
@@ -615,15 +725,15 @@ static PyObject *get_signal_val_binstr(PyObject *self, PyObject *args)
 static PyObject *get_signal_val_str(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
-    gpi_sim_hdl hdl;
+    gpi_sim_hdl_Object *hdl_obj;
     const char *result;
     PyObject *retstr;
 
-    if (!PyArg_ParseTuple(args, "O&", gpi_sim_hdl_converter, &hdl)) {
+    if (!PyArg_ParseTuple(args, "O!", &gpi_sim_hdl_Type, &hdl_obj)) {
         return NULL;
     }
 
-    result = gpi_get_signal_value_str(hdl);
+    result = gpi_get_signal_value_str(hdl_obj->hdl);
     retstr = Py_BuildValue("s", result);
 
     return retstr;
@@ -632,15 +742,15 @@ static PyObject *get_signal_val_str(PyObject *self, PyObject *args)
 static PyObject *get_signal_val_real(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
-    gpi_sim_hdl hdl;
+    gpi_sim_hdl_Object *hdl_obj;
     double result;
     PyObject *retval;
 
-    if (!PyArg_ParseTuple(args, "O&", gpi_sim_hdl_converter, &hdl)) {
+    if (!PyArg_ParseTuple(args, "O!", &gpi_sim_hdl_Type, &hdl_obj)) {
         return NULL;
     }
 
-    result = gpi_get_signal_value_real(hdl);
+    result = gpi_get_signal_value_real(hdl_obj->hdl);
     retval = Py_BuildValue("d", result);
 
     return retval;
@@ -650,15 +760,15 @@ static PyObject *get_signal_val_real(PyObject *self, PyObject *args)
 static PyObject *get_signal_val_long(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
-    gpi_sim_hdl hdl;
+    gpi_sim_hdl_Object *hdl_obj;
     long result;
     PyObject *retval;
 
-    if (!PyArg_ParseTuple(args, "O&", gpi_sim_hdl_converter, &hdl)) {
+    if (!PyArg_ParseTuple(args, "O!", &gpi_sim_hdl_Type, &hdl_obj)) {
         return NULL;
     }
 
-    result = gpi_get_signal_value_long(hdl);
+    result = gpi_get_signal_value_long(hdl_obj->hdl);
     retval = Py_BuildValue("l", result);
 
     return retval;
@@ -667,60 +777,60 @@ static PyObject *get_signal_val_long(PyObject *self, PyObject *args)
 static PyObject *set_signal_val_binstr(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
-    gpi_sim_hdl hdl;
+    gpi_sim_hdl_Object *hdl_obj;
     const char *binstr;
     gpi_set_action_t action;
 
-    if (!PyArg_ParseTuple(args, "O&is", gpi_sim_hdl_converter, &hdl, &action, &binstr)) {
+    if (!PyArg_ParseTuple(args, "O!is", &gpi_sim_hdl_Type, &hdl_obj, &action, &binstr)) {
         return NULL;
     }
 
-    gpi_set_signal_value_binstr(hdl, binstr, action);
+    gpi_set_signal_value_binstr(hdl_obj->hdl, binstr, action);
     Py_RETURN_NONE;
 }
 
 static PyObject *set_signal_val_str(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
-    gpi_sim_hdl hdl;
+    gpi_sim_hdl_Object *hdl_obj;
     gpi_set_action_t action;
     const char *str;
 
-    if (!PyArg_ParseTuple(args, "O&is", gpi_sim_hdl_converter, &hdl, &action, &str)) {
+    if (!PyArg_ParseTuple(args, "O!is", &gpi_sim_hdl_Type, &hdl_obj, &action, &str)) {
         return NULL;
     }
 
-    gpi_set_signal_value_str(hdl, str, action);
+    gpi_set_signal_value_str(hdl_obj->hdl, str, action);
     Py_RETURN_NONE;
 }
 
 static PyObject *set_signal_val_real(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
-    gpi_sim_hdl hdl;
+    gpi_sim_hdl_Object *hdl_obj;
     double value;
     gpi_set_action_t action;
 
-    if (!PyArg_ParseTuple(args, "O&id", gpi_sim_hdl_converter, &hdl, &action, &value)) {
+    if (!PyArg_ParseTuple(args, "O!id", &gpi_sim_hdl_Type, &hdl_obj, &action, &value)) {
         return NULL;
     }
 
-    gpi_set_signal_value_real(hdl, value, action);
+    gpi_set_signal_value_real(hdl_obj->hdl, value, action);
     Py_RETURN_NONE;
 }
 
 static PyObject *set_signal_val_long(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
-    gpi_sim_hdl hdl;
+    gpi_sim_hdl_Object *hdl_obj;
     long value;
     gpi_set_action_t action;
 
-    if (!PyArg_ParseTuple(args, "O&il", gpi_sim_hdl_converter, &hdl, &action, &value)) {
+    if (!PyArg_ParseTuple(args, "O!il", &gpi_sim_hdl_Type, &hdl_obj, &action, &value)) {
         return NULL;
     }
 
-    gpi_set_signal_value_long(hdl, value, action);
+    gpi_set_signal_value_long(hdl_obj->hdl, value, action);
     Py_RETURN_NONE;
 }
 
@@ -728,14 +838,14 @@ static PyObject *get_definition_name(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
     const char* result;
-    gpi_sim_hdl hdl;
+    gpi_sim_hdl_Object *hdl_obj;
     PyObject *retstr;
 
-    if (!PyArg_ParseTuple(args, "O&", gpi_sim_hdl_converter, &hdl)) {
+    if (!PyArg_ParseTuple(args, "O!", &gpi_sim_hdl_Type, &hdl_obj)) {
         return NULL;
     }
 
-    result = gpi_get_definition_name((gpi_sim_hdl)hdl);
+    result = gpi_get_definition_name(hdl_obj->hdl);
     retstr = Py_BuildValue("s", result);
 
     return retstr;
@@ -745,14 +855,14 @@ static PyObject *get_definition_file(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
     const char* result;
-    gpi_sim_hdl hdl;
+    gpi_sim_hdl_Object *hdl_obj;
     PyObject *retstr;
 
-    if (!PyArg_ParseTuple(args, "O&", gpi_sim_hdl_converter, &hdl)) {
+    if (!PyArg_ParseTuple(args, "O!", &gpi_sim_hdl_Type, &hdl_obj)) {
         return NULL;
     }
 
-    result = gpi_get_definition_file((gpi_sim_hdl)hdl);
+    result = gpi_get_definition_file(hdl_obj->hdl);
     retstr = Py_BuildValue("s", result);
 
     return retstr;
@@ -762,17 +872,17 @@ static PyObject *get_handle_by_name(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
     const char *name;
-    gpi_sim_hdl hdl;
+    gpi_sim_hdl_Object *hdl_obj;
     gpi_sim_hdl result;
     PyObject *res;
 
-    if (!PyArg_ParseTuple(args, "O&s", gpi_sim_hdl_converter, &hdl, &name)) {
+    if (!PyArg_ParseTuple(args, "O!s", &gpi_sim_hdl_Type, &hdl_obj, &name)) {
         return NULL;
     }
 
-    result = gpi_get_handle_by_name((gpi_sim_hdl)hdl, name);
+    result = gpi_get_handle_by_name(hdl_obj->hdl, name);
 
-    res = PyLong_FromVoidPtr(result);
+    res = gpi_sim_hdl_New(result);
 
     return res;
 }
@@ -781,17 +891,17 @@ static PyObject *get_handle_by_index(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
     int32_t index;
-    gpi_sim_hdl hdl;
+    gpi_sim_hdl_Object *hdl_obj;
     gpi_sim_hdl result;
     PyObject *value;
 
-    if (!PyArg_ParseTuple(args, "O&i", gpi_sim_hdl_converter, &hdl, &index)) {
+    if (!PyArg_ParseTuple(args, "O!i", &gpi_sim_hdl_Type, &hdl_obj, &index)) {
         return NULL;
     }
 
-    result = gpi_get_handle_by_index((gpi_sim_hdl)hdl, index);
+    result = gpi_get_handle_by_index(hdl_obj->hdl, index);
 
-    value = PyLong_FromVoidPtr(result);
+    value = gpi_sim_hdl_New(result);
 
     return value;
 }
@@ -813,7 +923,7 @@ static PyObject *get_root_handle(PyObject *self, PyObject *args)
     }
 
 
-    value = PyLong_FromVoidPtr(result);
+    value = gpi_sim_hdl_New(result);
 
     return value;
 }
@@ -823,14 +933,14 @@ static PyObject *get_name_string(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
     const char *result;
-    gpi_sim_hdl hdl;
+    gpi_sim_hdl_Object *hdl_obj;
     PyObject *retstr;
 
-    if (!PyArg_ParseTuple(args, "O&", gpi_sim_hdl_converter, &hdl)) {
+    if (!PyArg_ParseTuple(args, "O!", &gpi_sim_hdl_Type, &hdl_obj)) {
         return NULL;
     }
 
-    result = gpi_get_signal_name_str((gpi_sim_hdl)hdl);
+    result = gpi_get_signal_name_str(hdl_obj->hdl);
     retstr = Py_BuildValue("s", result);
 
     return retstr;
@@ -840,14 +950,14 @@ static PyObject *get_type(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
     gpi_objtype_t result;
-    gpi_sim_hdl hdl;
+    gpi_sim_hdl_Object *hdl_obj;
     PyObject *pyresult;
 
-    if (!PyArg_ParseTuple(args, "O&", gpi_sim_hdl_converter, &hdl)) {
+    if (!PyArg_ParseTuple(args, "O!", &gpi_sim_hdl_Type, &hdl_obj)) {
         return NULL;
     }
 
-    result = gpi_get_object_type((gpi_sim_hdl)hdl);
+    result = gpi_get_object_type(hdl_obj->hdl);
     pyresult = Py_BuildValue("i", (int)result);
 
     return pyresult;
@@ -857,14 +967,14 @@ static PyObject *get_const(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
     int result;
-    gpi_sim_hdl hdl;
+    gpi_sim_hdl_Object *hdl_obj;
     PyObject *pyresult;
 
-    if (!PyArg_ParseTuple(args, "O&", gpi_sim_hdl_converter, &hdl)) {
+    if (!PyArg_ParseTuple(args, "O!", &gpi_sim_hdl_Type, &hdl_obj)) {
         return NULL;
     }
 
-    result = gpi_is_constant((gpi_sim_hdl)hdl);
+    result = gpi_is_constant(hdl_obj->hdl);
     pyresult = Py_BuildValue("i", result);
 
     return pyresult;
@@ -874,14 +984,14 @@ static PyObject *get_type_string(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
     const char *result;
-    gpi_sim_hdl hdl;
+    gpi_sim_hdl_Object *hdl_obj;
     PyObject *retstr;
 
-    if (!PyArg_ParseTuple(args, "O&", gpi_sim_hdl_converter, &hdl)) {
+    if (!PyArg_ParseTuple(args, "O!", &gpi_sim_hdl_Type, &hdl_obj)) {
         return NULL;
     }
 
-    result = gpi_get_signal_type_str((gpi_sim_hdl)hdl);
+    result = gpi_get_signal_type_str(hdl_obj->hdl);
     retstr = Py_BuildValue("s", result);
 
     return retstr;
@@ -927,14 +1037,14 @@ static PyObject *get_precision(PyObject *self, PyObject *args)
 static PyObject *get_num_elems(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
-    gpi_sim_hdl hdl;
+    gpi_sim_hdl_Object *hdl_obj;
     PyObject *retstr;
 
-    if (!PyArg_ParseTuple(args, "O&", gpi_sim_hdl_converter, &hdl)) {
+    if (!PyArg_ParseTuple(args, "O!", &gpi_sim_hdl_Type, &hdl_obj)) {
         return NULL;
     }
 
-    int elems = gpi_get_num_elems((gpi_sim_hdl)hdl);
+    int elems = gpi_get_num_elems(hdl_obj->hdl);
     retstr = Py_BuildValue("i", elems);
 
     return retstr;
@@ -943,16 +1053,16 @@ static PyObject *get_num_elems(PyObject *self, PyObject *args)
 static PyObject *get_range(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
-    gpi_sim_hdl hdl;
+    gpi_sim_hdl_Object *hdl_obj;
     PyObject *retstr;
 
-    if (!PyArg_ParseTuple(args, "O&", gpi_sim_hdl_converter, &hdl)) {
+    if (!PyArg_ParseTuple(args, "O!", &gpi_sim_hdl_Type, &hdl_obj)) {
         return NULL;
     }
 
-    int indexable = gpi_is_indexable((gpi_sim_hdl)hdl);
-    int rng_left  = gpi_get_range_left((gpi_sim_hdl)hdl);
-    int rng_right = gpi_get_range_right((gpi_sim_hdl)hdl);
+    int indexable = gpi_is_indexable(hdl_obj->hdl);
+    int rng_left  = gpi_get_range_left(hdl_obj->hdl);
+    int rng_right = gpi_get_range_right(hdl_obj->hdl);
 
     if (indexable)
         retstr = Py_BuildValue("(i,i)", rng_left, rng_right);
@@ -975,15 +1085,15 @@ static PyObject *stop_simulator(PyObject *self, PyObject *args)
 static PyObject *deregister_callback(PyObject *self, PyObject *args)
 {
     COCOTB_UNUSED(self);
-    gpi_cb_hdl hdl;
+    gpi_cb_hdl_Object *hdl_obj;
 
     FENTER
 
-    if (!PyArg_ParseTuple(args, "O&", gpi_cb_hdl_converter, &hdl)) {
+    if (!PyArg_ParseTuple(args, "O!", &gpi_cb_hdl_Type, &hdl_obj)) {
         return NULL;
     }
 
-    gpi_deregister_callback(hdl);
+    gpi_deregister_callback(hdl_obj->hdl);
 
     FEXIT
     Py_RETURN_NONE;
@@ -1061,6 +1171,17 @@ static struct PyModuleDef moduledef = {
 PyMODINIT_FUNC PyInit_simulator(void)
 {
     PyObject* simulator;
+
+    /* initialize the extension types */
+    if (PyType_Ready(&gpi_sim_hdl_Type) < 0) {
+        return NULL;
+    }
+    if (PyType_Ready(&gpi_cb_hdl_Type) < 0) {
+        return NULL;
+    }
+    if (PyType_Ready(&gpi_iterator_hdl_Type) < 0) {
+        return NULL;
+    }
 
     simulator = PyModule_Create(&moduledef);
 
