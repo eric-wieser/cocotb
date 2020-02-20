@@ -179,6 +179,9 @@ static Py_hash_t gpi_iterator_hdl_hash(gpi_iterator_hdl_Object *self) {
     return ret;
 }
 
+
+static PyObject *gpi_iterator_hdl_next(gpi_iterator_hdl_Object *hdl_obj);
+
 static PyTypeObject gpi_iterator_hdl_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = "simulator.gpi_iterator_hdl",
@@ -186,6 +189,8 @@ static PyTypeObject gpi_iterator_hdl_Type = {
     .tp_flags = Py_TPFLAGS_DEFAULT,
     .tp_repr = (reprfunc)gpi_iterator_hdl_repr,
     .tp_hash = (hashfunc)gpi_iterator_hdl_hash,
+    .tp_iter = PyObject_SelfIter,
+    .tp_iternext = (iternextfunc)gpi_iterator_hdl_next,
 };
 
 static PyObject *gpi_iterator_hdl_New(gpi_iterator_hdl hdl) {
@@ -673,16 +678,10 @@ static PyObject *iterate(PyObject *self, PyObject *args)
 }
 
 
-static PyObject *next(PyObject *self, PyObject *args)
+static PyObject *gpi_iterator_hdl_next(gpi_iterator_hdl_Object *hdl_obj)
 {
-    COCOTB_UNUSED(self);
-    gpi_iterator_hdl_Object* hdl_obj;
     gpi_sim_hdl result;
     PyObject *res;
-
-    if (!PyArg_ParseTuple(args, "O!", &gpi_iterator_hdl_Type, &hdl_obj)) {
-        return NULL;
-    }
 
     // TODO:eric-wieser: It's valid for iterate to return a NULL handle, to make the Python
     // intuitive we simply raise StopIteration on the first iteration

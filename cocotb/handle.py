@@ -537,15 +537,6 @@ class NonHierarchyIndexableObject(NonHierarchyObject):
         return result
 
 
-class _SimIterator(collections.abc.Iterator):
-    """Iterator over simulator objects. For internal use only."""
-
-    def __init__(self, handle, mode):
-        self._iter = simulator.iterate(handle, mode)
-
-    def __next__(self):
-        return simulator.next(self._iter)
-
 
 class NonConstantObject(NonHierarchyIndexableObject):
     """ A non-constant object"""
@@ -553,11 +544,11 @@ class NonConstantObject(NonHierarchyIndexableObject):
 
     def drivers(self):
         """An iterator for gathering all drivers for a signal."""
-        return _SimIterator(self._handle, simulator.DRIVERS)
+        return simulator.iterate(self._handle, simulator.DRIVERS)
 
     def loads(self):
         """An iterator for gathering all loads on a signal."""
-        return _SimIterator(self._handle, simulator.LOADS)
+        return simulator.iterate(self._handle, simulator.LOADS)
 
 class _SetAction:
     """Base class representing the type of action used while write-accessing a handle."""
