@@ -78,14 +78,14 @@ class SimHandleBase(object):
         self._sub_handles = {}  # Dictionary of children
         self._invalid_sub_handles = {}  # Dictionary of invalid queries
 
-        self._name = simulator.get_name_string(self._handle)
-        self._type = simulator.get_type_string(self._handle)
+        self._name = self._handle.get_name_string()
+        self._type = self._handle.get_type_string()
         self._fullname = self._name + "(%s)" % self._type
         self._path = self._name if path is None else path
         self._log = SimLog("cocotb.%s" % self._name)
         self._log.debug("Created")
-        self._def_name = simulator.get_definition_name(self._handle)
-        self._def_file = simulator.get_definition_file(self._handle)
+        self._def_name = self._handle.get_definition_name()
+        self._def_file = self._handle.get_definition_file()
 
     def get_definition_name(self):
         return self._def_name
@@ -102,7 +102,7 @@ class SimHandleBase(object):
         For vectors this is the number of bits.
         """
         if self._len is None:
-            self._len = simulator.get_num_elems(self._handle)
+            self._len = self._handle.get_num_elems()
         return self._len
 
     def __eq__(self, other):
@@ -190,8 +190,8 @@ class RegionObject(SimHandleBase):
         if self._discovered:
             return
         self._log.debug("Discovering all on %s", self._name)
-        for thing in _SimIterator(self._handle, simulator.OBJECTS):
-            name = simulator.get_name_string(thing)
+        for thing in self._handle.iterate(simulator.OBJECTS):
+            name = thing.get_name_string()
             try:
                 hdl = SimHandle(thing, self._child_path(name))
             except TestError as e:
@@ -267,7 +267,7 @@ class HierarchyObject(RegionObject):
         if name.startswith("_"):
             return SimHandleBase.__getattr__(self, name)
 
-        new_handle = simulator.get_handle_by_name(self._handle, name)
+        new_handle = self._handle.get_handle_by_name(name)
 
         if not new_handle:
             if name in self._compat_mapping:
@@ -292,7 +292,7 @@ class HierarchyObject(RegionObject):
         if name in self._invalid_sub_handles:
             return None
 
-        new_handle = simulator.get_handle_by_name(self._handle, name)
+        new_handle = self._handle.get_handle_by_name(name)
         if new_handle:
             self._sub_handles[name] = SimHandle(new_handle, self._child_path(name))
         else:
@@ -348,7 +348,7 @@ class HierarchyArrayObject(RegionObject):
             raise IndexError("Slice indexing is not supported")
         if index in self._sub_handles:
             return self._sub_handles[index]
-        new_handle = simulator.get_handle_by_index(self._handle, index)
+        new_handle = self._handle.get_handle_by_index(index)
         if not new_handle:
             raise IndexError("%s contains no object at index %d" % (self._name, index))
         path = self._path + "[" + str(index) + "]"
@@ -447,13 +447,13 @@ class ConstantObject(NonHierarchyObject):
         """
         NonHierarchyObject.__init__(self, handle, path)
         if handle_type in [simulator.INTEGER, simulator.ENUM]:
-            self._value = simulator.get_signal_val_long(self._handle)
+            self._value = self._handle.get_signal_val_long()
         elif handle_type == simulator.REAL:
-            self._value = simulator.get_signal_val_real(self._handle)
+            self._value = self._handle.get_signal_val_real()
         elif handle_type == simulator.STRING:
-            self._value = simulator.get_signal_val_str(self._handle)
+            self._value = self._handle.get_signal_val_str()
         else:
-            val = simulator.get_signal_val_binstr(self._handle)
+            val = self._handle.get_signal_val_binstr()
             self._value = BinaryValue(n_bits=len(val))
             try:
                 self._value.binstr = val
@@ -478,7 +478,7 @@ class NonHierarchyIndexableObject(NonHierarchyObject):
     """ A non-hierarchy indexable object. """
     def __init__(self, handle, path):
         NonHierarchyObject.__init__(self, handle, path)
-        self._range = simulator.get_range(self._handle)
+        self._range = self._handle.get_range()
 
     def __setitem__(self, index, value):
         """Provide transparent assignment to indexed array handles."""
@@ -499,7 +499,7 @@ class NonHierarchyIndexableObject(NonHierarchyObject):
             raise IndexError("%s is not indexable.  Unable to get object at index %d" % (self._fullname, index))
         if index in self._sub_handles:
             return self._sub_handles[index]
-        new_handle = simulator.get_handle_by_index(self._handle, index)
+        new_handle = self._handle.get_handle_by_index(index)
         if not new_handle:
             raise IndexError("%s contains no object at index %d" % (self._fullname, index))
         path = self._path + "[" + str(index) + "]"
@@ -544,11 +544,11 @@ class NonConstantObject(NonHierarchyIndexableObject):
 
     def drivers(self):
         """An iterator for gathering all drivers for a signal."""
-        return simulator.iterate(self._handle, simulator.DRIVERS)
+        return self._handle.iterate(simulator.DRIVERS)
 
     def loads(self):
         """An iterator for gathering all loads on a signal."""
-        return simulator.iterate(self._handle, simulator.LOADS)
+        return self._handle.iterate(simulator.LOADS)
 
 class _SetAction:
     """Base class representing the type of action used while write-accessing a handle."""
@@ -601,6 +601,8 @@ class ModifiableObject(NonConstantObject):
                  for value assignment.
         """
         value, set_action = self._check_for_set_action(value)
+        if isinstance(value, _py_compat.integer_types) and value < 0x7fffffff and len(self) <= 32:
+            self._handle.set_signal_val_long(set_action, value)
 
         if isinstance(value, int) and value < 0x7fffffff and len(self) <= 32:
             simulator.set_signal_val_long(self._handle, set_action, value)
@@ -628,7 +630,7 @@ class ModifiableObject(NonConstantObject):
             self._log.critical("Unsupported type for value assignment: %s (%s)", type(value), repr(value))
             raise TypeError("Unable to set simulator value with type %s" % (type(value)))
 
-        simulator.set_signal_val_binstr(self._handle, set_action, value.binstr)
+        self._handle.set_signal_val_binstr(set_action, value.binstr)
 
     def _check_for_set_action(self, value):
         if not isinstance(value, _SetAction):
@@ -637,7 +639,7 @@ class ModifiableObject(NonConstantObject):
 
     @NonConstantObject.value.getter
     def value(self):
-        binstr = simulator.get_signal_val_binstr(self._handle)
+        binstr = self._handle.get_signal_val_binstr()
         result = BinaryValue(binstr, len(binstr))
         return result
 
@@ -683,11 +685,11 @@ class RealObject(ModifiableObject):
                                (type(value), repr(value)))
             raise TypeError("Unable to set simulator value with type %s" % (type(value)))
 
-        simulator.set_signal_val_real(self._handle, set_action, value)
+        self._handle.set_signal_val_real(set_action, value)
 
     @ModifiableObject.value.getter
     def value(self):
-        return simulator.get_signal_val_real(self._handle)
+        return self._handle.get_signal_val_real()
 
     def __float__(self):
         return float(self.value)
@@ -717,11 +719,11 @@ class EnumObject(ModifiableObject):
             self._log.critical("Unsupported type for integer value assignment: %s (%s)", type(value), repr(value))
             raise TypeError("Unable to set simulator value with type %s" % (type(value)))
 
-        simulator.set_signal_val_long(self._handle, set_action, value)
+        self._handle.set_signal_val_long(set_action, value)
 
     @ModifiableObject.value.getter
     def value(self):
-        return simulator.get_signal_val_long(self._handle)
+        return self._handle.get_signal_val_long()
 
 
 class IntegerObject(ModifiableObject):
@@ -748,11 +750,11 @@ class IntegerObject(ModifiableObject):
             self._log.critical("Unsupported type for integer value assignment: %s (%s)", type(value), repr(value))
             raise TypeError("Unable to set simulator value with type %s" % (type(value)))
 
-        simulator.set_signal_val_long(self._handle, set_action, value)
+        self._handle.set_signal_val_long(set_action, value)
 
     @ModifiableObject.value.getter
     def value(self):
-        return simulator.get_signal_val_long(self._handle)
+        return self._handle.get_signal_val_long()
 
 
 class StringObject(ModifiableObject):
@@ -777,11 +779,11 @@ class StringObject(ModifiableObject):
             self._log.critical("Unsupported type for string value assignment: %s (%s)", type(value), repr(value))
             raise TypeError("Unable to set simulator value with type %s" % (type(value)))
 
-        simulator.set_signal_val_str(self._handle, set_action, value)
+        self._handle.set_signal_val_str(set_action, value)
 
     @ModifiableObject.value.getter
     def value(self):
-        return simulator.get_signal_val_str(self._handle)
+        return self._handle.get_signal_val_str()
 
 _handle2obj = {}
 
@@ -819,10 +821,10 @@ def SimHandle(handle, path=None):
     except KeyError:
         pass
 
-    t = simulator.get_type(handle)
+    t = handle.get_type()
 
     # Special case for constants
-    if simulator.get_const(handle) and t not in [simulator.MODULE,
+    if handle.get_const() and t not in [simulator.MODULE,
                                                  simulator.STRUCTURE,
                                                  simulator.NETARRAY,
                                                  simulator.GENARRAY]:
