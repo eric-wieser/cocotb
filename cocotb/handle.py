@@ -201,7 +201,7 @@ class RegionObject(SimHandleBase):
             try:
                 key = self._sub_handle_key(name)
             except ValueError:
-                self._log.debug("Unable to translate handle >%s< to a valid _sub_handle key", hdl._name)
+                self._log.warning("Unable to translate subhandle %r of %r to a valid _sub_handle key", name, self._name)
                 continue
 
             self._sub_handles[key] = hdl
@@ -214,7 +214,7 @@ class RegionObject(SimHandleBase):
 
     def _sub_handle_key(self, name):
         """Translates the handle name to a key to use in ``_sub_handles`` dictionary."""
-        return name.split(".")[-1]
+        return name
 
     def __dir__(self):
         """Permits IPython tab completion to work."""
@@ -312,11 +312,11 @@ class HierarchyArrayObject(RegionObject):
         # VHPI(ALDEC):        _name__X where X is the index
         # VPI:                _name[X] where X is the index
         import re
-        result = re.match(r"{0}__(?P<index>\d+)$".format(self._name), name)
+        result = re.match(r"{0}__(?P<index>\d+)$".format(re.escape(self._name)), name)
         if not result:
-            result = re.match(r"{0}\((?P<index>\d+)\)$".format(self._name), name)
+            result = re.match(r"{0}\((?P<index>\d+)\)$".format(re.escape(self._name)), name)
         if not result:
-            result = re.match(r"{0}\[(?P<index>\d+)\]$".format(self._name), name)
+            result = re.match(r"{0}\[(?P<index>\d+)\]$".format(re.escape(self._name)), name)
 
         if result:
             return int(result.group("index"))

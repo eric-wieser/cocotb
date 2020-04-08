@@ -107,6 +107,11 @@ architecture impl of sample_module is
     type twoDimArrayType is array (natural range <>) of unsignedArrayType(31 downto 28);
     signal array_2d         : twoDimArrayType(0 to 1);
 
+    -- for testing weird signal names
+    signal \weird.signal(1)\              : std_ulogic_vector(3 downto 0);
+    signal \weird.signal(2)\              : std_ulogic_vector(3 downto 0);
+    signal \(.*|this looks like a regex)\ : std_ulogic_vector(3 downto 0);
+
 begin
 
     process (clk) begin
