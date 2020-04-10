@@ -29,8 +29,8 @@ _hal.so: ../hal/endian_swapper_hal.c endian_swapper_hal_wrap.c io_module.so
 		install_name_tool -change io_module.so $(shell pwd)/io_module.so $@; \
 	fi
 
-endian_swapper_hal_wrap.c: ../hal/endian_swapper_hal.h
-	$(SWIG) -python -outcurrentdir ../hal/endian_swapper_hal.h
+endian_swapper_hal_wrap.c: ../hal/endian_swapper_hal.i ../hal/endian_swapper_hal.h
+	$(SWIG) -python -outcurrentdir ../hal/endian_swapper_hal.i
 
 .PHONY: clean
 clean:

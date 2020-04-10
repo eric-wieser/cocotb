@@ -28,7 +28,6 @@
 #ifndef __ENDIAN_SWAPPER_HAL_H__
 #define __ENDIAN_SWAPPER_HAL_H__
 
-
 #ifdef __cplusplus
 extern "C"
 {
@@ -50,21 +49,5 @@ int endian_swapper_get_count(endian_swapper_state_t *state);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
-
-// Swig template for this file
-#ifdef SWIG
-%module hal
-%{
-/* Includes the header in the wrapper code */
-#include "endian_swapper_hal.h"
-%}
-
-/* Parse the header file to generate wrappers */
-%include "endian_swapper_hal.h"
-#endif
-
-
-
 
 #endif /* __ENDIAN_SWAPPER_HAL_H__ */
