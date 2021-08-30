@@ -1,0 +1,36 @@
+name: Bug Report
+description: File a bug report
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: input
+    id: version
+    attributes:
+      label: Cocotb Version
+      description: What version of cocotb are you running?
+    validations:
+      required: true
+  - type: input
+    id: os_version
+    attributes:
+      label: Operating system
+      description: What operating system and version (32/64 bit) are you running?
+    validations:
+      required: true
+  - type: input
+    id: simulator_version
+    attributes:
+      label: Simulator version
+      description: What simulator and version (32/64 bit) are you running?
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        If you are unsure about any of the above items, open the issue anyway and we will figure it out together.
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
